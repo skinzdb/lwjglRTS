@@ -5,16 +5,17 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 
 public class Model {
 	private int draw_count;
 	
 	private int v_id;
-	private int c_id;
+	private int t_id;
 	
 	private int i_id;
 	
-	public Model(float[] vertices, int[] indices, float[] colours) {
+	public Model(float[] vertices, int[] indices, float[] texture) {
 		draw_count = indices.length;		
 		
 		// VERTICES
@@ -22,10 +23,10 @@ public class Model {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, v_id);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, createBuffer(vertices), GL15.GL_STATIC_DRAW);
 		
-		// COLOURS
-		c_id = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, c_id);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, createBuffer(colours), GL15.GL_STATIC_DRAW);
+		// TEXTURE
+		t_id = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t_id);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, createBuffer(texture), GL15.GL_STATIC_DRAW);
 		
 		// INDICES
 		i_id = GL15.glGenBuffers();
@@ -48,16 +49,17 @@ public class Model {
 		return buffer;
 	}
 	
-	public void render() {							
-		// VERTICES
-		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, v_id);
-		GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+	public void render() {			
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
 		
-		// COLOURS
-		GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, c_id);
-		GL11.glColorPointer(3, GL11.GL_FLOAT, 0, 0);
+		// VERTICES
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, v_id);
+		GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+		
+		// TEXTURE
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t_id);
+		GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 0, 0);
 		
 		// INDICES
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, i_id);
@@ -68,5 +70,8 @@ public class Model {
 		// UNBIND BUFFERS
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		GL20.glDisableVertexAttribArray(0);
+		GL20.glDisableVertexAttribArray(1);
 	}
 }

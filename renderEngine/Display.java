@@ -40,11 +40,11 @@ public class Display {
 				0.5f,  -0.5f, 1, 	// Vertex 3 (X, Y)	2
 				-0.5f,  -0.5f, 1, 	// Vertex 4 (X, Y)	3
 		};
-		float colours[] = {
-			    1,0,0,
-			    0,1,0,
-			    0,1,1,
-			    0,0,1
+		float texture_coords[] = {
+			    0,0,
+			    1,0,
+			    1,1,
+			    0,1,
 		};
 		int indices[] = {
 				0,1,2,
@@ -53,12 +53,18 @@ public class Display {
 	
 		GL11.glClearColor(1, 1, 1, 1);
 		
-		Model model = new Model(vertices, indices, colours);
+		Model model = new Model(vertices, indices, texture_coords);
+		Shader shader = new Shader("shader");
+		Texture tex = new Texture("./textures/test2.png");
 		
 		while (!GLFW.glfwWindowShouldClose(win) ) {			//MAINLOOP
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 			
 			GLFW.glfwPollEvents();
+			
+			shader.bind();
+			shader.setUniform("sampler", 0);
+			tex.bind(0);
 			model.render();
 			
 			GLFW.glfwSwapBuffers(win);
